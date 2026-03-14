@@ -3,22 +3,18 @@
 
 #define BUFFER_SIZE 256
 
-void write_from_buffer(int fd, const char *buff, int size)
+static int write_from_buffer(int fd, const char *buff, int size)
 {
     int offset = 0;
     while (offset != size) 
     {
         int w_st = write(fd, buff + offset, size - offset);
-        if (w_st < 0)
-        {
-            close(fd);
-            fprintf(2, "write failed\n");
-            exit(1);
-        }
+        if (w_st < 0) return -1;
 
         offset += w_st;
-
     }
+
+    return 0;
 }
 
 
@@ -87,9 +83,24 @@ int main(int argc, char **argv)
 
         if (string_len + 1 > BUFFER_SIZE)
         {
-            write_from_buffer(pipefd[1], buffer, buff_used);
-            write_from_buffer(pipefd[1], argv[i], string_len);
-            write_from_buffer(pipefd[1], "\n", 1);
+            if (write_from_buffer(pipefd[1], buffer, buff_used) < 0)
+            {
+                close(pipefd[1]);
+                fprintf(2, "write failed\n");
+                exit(1);
+            }
+            if (write_from_buffer(pipefd[1], argv[i], string_len) < 0) 
+            {
+                close(pipefd[1]);
+                fprintf(2, "write failed\n");
+                exit(1);
+            }
+            if (write_from_buffer(pipefd[1], "\n", 1) < 0)
+            {
+                close(pipefd[1]);
+                fprintf(2, "write failed\n");
+                exit(1);
+            }
             buff_used = 0;
 
             continue;
@@ -97,16 +108,26 @@ int main(int argc, char **argv)
 
         if (string_len + buff_used + 1 > BUFFER_SIZE)
         {
-            write_from_buffer(pipefd[1], buffer, buff_used);
+            if (write_from_buffer(pipefd[1], buffer, buff_used) < 0)
+            {
+                close(pipefd[1]);
+                fprintf(2, "write failed\n");
+                exit(1);
+            }
             buff_used = 0;
         }
 
-        memmove(buffer + buff_used, argv[i], string_len);
+        memcpy(buffer + buff_used, argv[i], string_len);
         buff_used += string_len + 1;
         buffer[buff_used - 1] = '\n';
     }
 
-    write_from_buffer(pipefd[1], buffer, buff_used);
+    if (write_from_buffer(pipefd[1], buffer, buff_used) < 0)
+    {
+        close(pipefd[1]);
+        fprintf(2, "write failed\n");
+        exit(1);
+    }
 
     if (close(pipefd[1]) < 0)
     {
