@@ -18,7 +18,10 @@ int mutexalloc(struct file **f)
     if((*f = filealloc()) == 0)
         goto bad;
     if((m = (struct mutex*)kalloc()) == 0)
+    {
+        printf("mutexalloc: kalloc failed\n");
         goto bad;
+    }
 
     initsleeplock(&m->lock, "mutex");
     m->owner = 0;
@@ -27,6 +30,8 @@ int mutexalloc(struct file **f)
     (*f)->readable = 0;
     (*f)->writable = 0;
     (*f)->mutex = m;
+
+    printf("mutexalloc: %p\n", m);
 
     return 0;
     
@@ -40,6 +45,7 @@ int mutexalloc(struct file **f)
 
 void mutexclose(struct mutex *m)
 {
+    printf("mutexclose: %p\n", m);
     kfree((char*)m);
 }
 
