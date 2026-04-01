@@ -22,6 +22,9 @@ void            consoleinit(void);
 void            consoleintr(int);
 void            consputc(int);
 
+// psddevice.c
+void psddeviceinit(void);
+
 // exec.c
 int             kexec(char*, char**);
 
