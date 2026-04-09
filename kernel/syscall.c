@@ -101,6 +101,9 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
+extern uint64 sys_checkpgflags(void);
+extern uint64 sys_clearpgflags(void);
+extern uint64 sys_printpgtable(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -126,6 +129,9 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+[SYS_checkpgflags] sys_checkpgflags,
+[SYS_clearpgflags] sys_clearpgflags,
+[SYS_printpgtable] sys_printpgtable,
 };
 
 void
