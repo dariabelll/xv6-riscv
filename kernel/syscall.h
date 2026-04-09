@@ -20,3 +20,6 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+#define SYS_checkpgflags 22
+#define SYS_clearpgflags 23
+#define SYS_printpgtable 24
