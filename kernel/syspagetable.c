@@ -128,7 +128,7 @@ static void print_pgtable_rec(pagetable_t pgtable, int depth)
 
         if (depth > 0)
         {
-            for (int i = 0; i < depth; ++i) printf(".........");
+            for (int d = 0; d < depth; ++d) printf(".........");
             printf(" ");
         }
 
