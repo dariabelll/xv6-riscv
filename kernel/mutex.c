@@ -45,7 +45,6 @@ mutexalloc(struct file **f)
     m->id = mutexidalloc();
 
     (*f)->type = FD_MUTEX;
-    (*f)->ref = 1;
     (*f)->readable = 0;
     (*f)->writable = 0;
     (*f)->pipe = 0;
@@ -54,7 +53,7 @@ mutexalloc(struct file **f)
     (*f)->major = 0;
     (*f)->mutex = m;
 
-    printf("mutexalloc: id=%d addr=%p pid=%d\n", m->id, m, myproc()->pid);
+    printf("mutexalloc(kalloc): id=%d addr=%p pid=%d\n", m->id, m, myproc()->pid);
     return 0;
 
 bad:
@@ -71,7 +70,7 @@ void mutexclose(struct mutex *m)
     if(m == 0)
         return;
 
-    printf("mutexclose: id=%d addr=%p pid=%d\n", m->id, m, myproc() ? myproc()->pid : -1);
+    printf("mutexclose(kfree): id=%d addr=%p pid=%d\n", m->id, m, myproc() ? myproc()->pid : -1);
 
     kfree((char*)m);
 }

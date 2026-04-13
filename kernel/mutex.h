@@ -9,6 +9,7 @@ struct mutex
     uint id;
 };
 
+void mutexinit(void);
 int  mutexalloc(struct file **f);
 void mutexclose(struct mutex *m);
 int  mutexlock(struct file *f);
