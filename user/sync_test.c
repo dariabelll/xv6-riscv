@@ -22,11 +22,8 @@ static void test_no_mutex(int argc, char *argv[])
         for(int j = 0; argv[i][j] != 0; j++)
         {
             printf("%d", getpid());
-            pause(1);
             printf(": arg %d", i);
-            pause(1);
             printf(", char '%c'\n", argv[i][j]);
-            pause(1);
         }
     }
 
@@ -68,11 +65,8 @@ static void test_with_mutex(int argc, char *argv[])
             }
 
             printf("%d", getpid());
-            pause(1);
             printf(": arg %d", i);
-            pause(1);
             printf(", char '%c'\n", argv[i][j]);
-            pause(1);
 
             if (mutex_unlock(mfd) < 0)
             {

@@ -62,11 +62,8 @@ fileclose(struct file *f)
 {
   struct file ff;
 
-  if(f->type == FD_MUTEX && f->mutex != 0 && f->mutex->owner == myproc())
-  {
-    f->mutex->owner = 0;
+  if(f->type == FD_MUTEX && f->mutex != 0 && holdingsleep(&f->mutex->lock))
     releasesleep(&f->mutex->lock);
-  }
 
   acquire(&ftable.lock);
   if(f->ref < 1)

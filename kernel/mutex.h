@@ -6,7 +6,7 @@
 struct mutex
 {
     struct sleeplock lock;
-    struct proc *owner;
+    uint id;
 };
 
 int  mutexalloc(struct file **f);
