@@ -18,6 +18,8 @@
 // PHYSTOP -- end RAM used by the kernel
 
 #define RTC0 0x101000L
+#define RTC_LOW 0x00
+#define RTC_HIGH 0x04
 
 // qemu puts UART registers here in physical memory.
 #define UART0 0x10000000L

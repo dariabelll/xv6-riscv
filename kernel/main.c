@@ -18,6 +18,7 @@ main()
     printf("\n");
     kinit();         // physical page allocator
     kvminit();       // create kernel page table
+    rtcinit();
     kvminithart();   // turn on paging
     procinit();      // process table
     trapinit();      // trap vectors

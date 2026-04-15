@@ -151,6 +151,7 @@ void            uartputc_sync(int);
 int             uartgetc(void);
 
 // rtc.c
+void rtcinit(void);
 uint64 rtc_read(void);
 
 // vm.c
