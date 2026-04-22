@@ -34,5 +34,5 @@ int64 rtc_read(void)
     
     release(&rtc_lock);
 
-    return ((int64)high << 32) | low;
+    return (int64)(((uint64)high << 32) | low);
 }
