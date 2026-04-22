@@ -23,7 +23,7 @@ static uint32 rtc_high_read(void)
     return *RTCReg(RTC_HIGH);
 }
 
-uint64 rtc_read(void)
+int64 rtc_read(void)
 {
     uint32 low, high;
 
@@ -34,5 +34,5 @@ uint64 rtc_read(void)
     
     release(&rtc_lock);
 
-    return ((uint64)high << 32) | low;
+    return ((int64)high << 32) | low;
 }

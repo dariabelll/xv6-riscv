@@ -152,7 +152,7 @@ int             uartgetc(void);
 
 // rtc.c
 void rtcinit(void);
-uint64 rtc_read(void);
+int64 rtc_read(void);
 
 // vm.c
 void            kvminit(void);
