@@ -25,7 +25,7 @@ void init_ring_buffer()
     initlock(&dmesg_buffer.lock, "ringbuffer lock");
 }
 
-void write_byte_to_ringbuffer(const char c)
+static void write_byte_to_ringbuffer(const char c)
 {
     dmesg_buffer.buffer[dmesg_buffer.tail] = c;
     dmesg_buffer.tail = (dmesg_buffer.tail + 1) % RING_BUFFER_SIZE;
@@ -40,7 +40,7 @@ void write_byte_to_ringbuffer(const char c)
     }
 }
 
-void write_number_to_ringbuffer(uint64 num, uint base)
+static void write_number_to_ringbuffer(uint64 num, uint base)
 {
     const char* digits = "0123456789abcdef"; 
     if (num == 0)
@@ -66,12 +66,12 @@ void write_number_to_ringbuffer(uint64 num, uint base)
 
 }
 
-void write_signed_number_to_ringbuffer(int64 num)
+static void write_signed_number_to_ringbuffer(int64 num)
 {
     if (num < 0)
     {
         write_byte_to_ringbuffer('-');
-        write_number_to_ringbuffer(-num, 10);
+        write_number_to_ringbuffer((uint64)(-(num + 1)) + 1, 10);
     }
     else
     {
@@ -79,7 +79,7 @@ void write_signed_number_to_ringbuffer(int64 num)
     }
 }
 
-void write_pointer_to_ringbuffer(uint64 num)
+static void write_pointer_to_ringbuffer(uint64 num)
 {
     write_byte_to_ringbuffer('0');
     write_byte_to_ringbuffer('x');
@@ -170,7 +170,7 @@ void pr_msg (const char *fmt, ...)
         } 
         else if(c0 == 'c')
         {
-            write_byte_to_ringbuffer(va_arg(ap, uint));
+            write_byte_to_ringbuffer(va_arg(ap, int));
         } 
         else if(c0 == 's')
         {
@@ -196,4 +196,37 @@ void pr_msg (const char *fmt, ...)
     write_byte_to_ringbuffer('\n');
 
     release(&dmesg_buffer.lock);
+}
+
+int dmesg_read(uint64 buf, int size)
+{
+    struct proc *p = myproc();
+
+    if (size <= 0) return -1;
+
+    acquire(&dmesg_buffer.lock);
+    int n = dmesg_buffer.count;
+    if (dmesg_buffer.count >= size) n = size - 1;
+
+    int symb_num = dmesg_buffer.head;
+    for (int i = 0; i < n; ++i)
+    {
+        if(copyout(p->pagetable, buf + i, &dmesg_buffer.buffer[symb_num], 1) < 0) 
+        {
+            release(&dmesg_buffer.lock);
+            return -1;
+        }
+        symb_num = (symb_num + 1) % RING_BUFFER_SIZE;
+    }
+
+    char null = '\0';
+    if(copyout(p->pagetable, buf + n, &null, 1) < 0) 
+    {
+        release(&dmesg_buffer.lock);
+        return -1;
+    }
+
+
+    release(&dmesg_buffer.lock);
+    return n;
 }

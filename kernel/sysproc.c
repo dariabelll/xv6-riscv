@@ -107,3 +107,15 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_dmesg(void)
+{
+  uint64 buf;
+  int size;
+
+  argaddr(0, &buf);
+  argint(1, &size);
+
+  return dmesg_read(buf, size);
+}
