@@ -9,6 +9,12 @@
 
 #define RING_BUFFER_SIZE (PGSIZE * DMESG_PAGECOUNT)
 
+struct logconf {
+    struct spinlock lock;
+    int mask;
+    uint ticks_bound;
+} logconf;
+
 struct ringbuffer {
     char buffer[RING_BUFFER_SIZE];
     struct spinlock lock;
@@ -23,6 +29,10 @@ void init_ring_buffer()
     dmesg_buffer.tail = 0;
     dmesg_buffer.count = 0;
     initlock(&dmesg_buffer.lock, "ringbuffer lock");
+
+    logconf.mask = 0;
+    logconf.ticks_bound = 0;
+    initlock(&logconf.lock, "logconf");
 }
 
 static void write_byte_to_ringbuffer(const char c)
@@ -229,4 +239,52 @@ int dmesg_read(uint64 buf, int size)
 
     release(&dmesg_buffer.lock);
     return n;
+}
+
+int log_set(int mask, int duration)
+{
+    if (mask < 0 || mask > LOG_ALL) return -1;
+
+    acquire(&logconf.lock);
+
+    logconf.mask = mask;
+
+    if (duration > 0)
+    {
+        acquire(&tickslock);
+        logconf.ticks_bound = ticks + duration;
+        release(&tickslock);
+    }
+    else logconf.ticks_bound = 0;
+
+    release(&logconf.lock);
+
+    return 0;
+}
+
+int log_is_enable(int event_type)
+{
+
+    if (event_type < 0) return -1;
+
+    acquire(&tickslock);
+    uint t = ticks;
+    release(&tickslock);
+
+    int enable = 0;
+    
+    acquire(&logconf.lock);
+
+    if (event_type & logconf.mask && event_type <= LOG_ALL) {
+
+        if (logconf.ticks_bound == 0 || t <= logconf.ticks_bound)
+        {
+            enable = 1;
+        }
+
+    }
+
+    release(&logconf.lock);
+
+    return enable;
 }

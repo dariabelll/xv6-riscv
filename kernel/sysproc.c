@@ -119,3 +119,15 @@ sys_dmesg(void)
 
   return dmesg_read(buf, size);
 }
+
+uint64
+sys_logcfg(void)
+{
+  int mask;
+  int duration;
+
+  argint(0, &mask);
+  argint(1, &duration);
+
+  return log_set(mask, duration);
+}

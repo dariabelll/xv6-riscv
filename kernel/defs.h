@@ -26,6 +26,8 @@ void            consputc(int);
 void init_ring_buffer(void);
 void pr_msg(const char*, ...);
 int dmesg_read(uint64, int);
+int log_set(int, int);
+int log_is_enable(int);
 
 // exec.c
 int             kexec(char*, char**);
