@@ -16,9 +16,9 @@ int main(int argc, char **argv)
 
     if(strcmp(argv[1], "off") == 0) mask = 0;
     else if(strcmp(argv[1], "all") == 0) mask = LOG_ALL;
-    else if(strcmp(argv[1], "intr") == 0) mask = LOG_INTERRUPTS;
-    else if(strcmp(argv[1], "sys") == 0) mask = LOG_SYSCALLS;
-    else if(strcmp(argv[1], "proc") == 0) mask = LOG_PROCESSES;
+    else if(strcmp(argv[1], "interrupts") == 0) mask = LOG_INTERRUPTS;
+    else if(strcmp(argv[1], "syscalls") == 0) mask = LOG_SYSCALLS;
+    else if(strcmp(argv[1], "processes") == 0) mask = LOG_PROCESSES;
     else if(strcmp(argv[1], "exec") == 0) mask = LOG_EXEC;
     else 
     {
