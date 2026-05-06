@@ -142,6 +142,10 @@ syscall(void)
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0
+    if (log_is_enable(LOG_SYSCALLS)) 
+    {
+      pr_msg("syscall pid=%d proc=%s num=%d", p->pid, p->name, num);
+    }
     p->trapframe->a0 = syscalls[num]();
   } else {
     printf("%d %s: unknown sys call %d\n",

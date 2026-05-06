@@ -1,14 +1,13 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "kernel/param.h"
-#include "kernel/riscv.h"
 #include "user/user.h"
 
-#define DMESG_BUF_SIZE (DMESG_PAGECOUNT * PGSIZE + 1)
+#define DMESG_USER_BUFSIZE 20000
 
 int main(int argc, char *argv[])
 {
-    char buf[DMESG_BUF_SIZE];
+    char buf[DMESG_USER_BUFSIZE];
 
     if (dmesg(buf, sizeof(buf)) < 0)
     {

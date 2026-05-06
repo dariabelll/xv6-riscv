@@ -298,6 +298,11 @@ kfork(void)
   np->parent = p;
   release(&wait_lock);
 
+  if(log_is_enable(LOG_PROCESSES))
+  {
+    pr_msg("fork parent_pid=%d parent_name=%s child_pid=%d child_name=%s", p->pid, p->name, np->pid, np->name);
+  }
+
   acquire(&np->lock);
   np->state = RUNNABLE;
   release(&np->lock);
@@ -344,6 +349,17 @@ kexit(int status)
   iput(p->cwd);
   end_op();
   p->cwd = 0;
+
+  int parent_pid = -1;
+
+  acquire(&wait_lock);
+  if(p->parent) parent_pid = p->parent->pid;
+  release(&wait_lock);
+
+  if (log_is_enable(LOG_PROCESSES))
+  {
+    pr_msg("exit pid=%d name=%s parent_pid=%d status=%d", p->pid, p->name, parent_pid, status);
+  }
 
   acquire(&wait_lock);
 

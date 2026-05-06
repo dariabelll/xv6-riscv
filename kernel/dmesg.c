@@ -1,5 +1,4 @@
-#include <stdarg.h>
-
+#include "stdarg.h"
 #include "types.h"
 #include "param.h"
 #include "riscv.h"
@@ -282,6 +281,12 @@ int log_is_enable(int event_type)
             enable = 1;
         }
 
+    }
+
+    if (logconf.ticks_bound != 0 && t > logconf.ticks_bound)
+    {
+        logconf.mask = 0;
+        logconf.ticks_bound = 0;
     }
 
     release(&logconf.lock);
