@@ -12,4 +12,10 @@
 #define FSSIZE       2000  // size of file system in blocks
 #define MAXPATH      128   // maximum file path name
 #define USERSTACK    1     // user stack pages
+#define DMESG_PAGECOUNT 4
 
+#define LOG_INTERRUPTS 1
+#define LOG_SYSCALLS 2
+#define LOG_PROCESSES 4
+#define LOG_EXEC 8
+#define LOG_ALL (LOG_INTERRUPTS | LOG_SYSCALLS | LOG_PROCESSES | LOG_EXEC)
