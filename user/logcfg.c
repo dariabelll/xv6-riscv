@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 
     if(argc < 2 || argc > 3)
     {
-        fprintf(2, "Query must be: logcfg [off|all|interraptions|syscalls|processes|exec] [opt:ticks count]\n");
+        fprintf(2, "Query must be: logcfg [off|all|interrupts|syscalls|processes|exec] [opt:ticks count]\n");
         exit(1);
     }
 

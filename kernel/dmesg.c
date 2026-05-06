@@ -1,7 +1,7 @@
 #include "stdarg.h"
 #include "types.h"
-#include "param.h"
 #include "riscv.h"
+#include "param.h"
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
@@ -32,6 +32,8 @@ void init_ring_buffer()
     logconf.mask = 0;
     logconf.ticks_bound = 0;
     initlock(&logconf.lock, "logconf");
+
+    write_byte_to_ringbuffer('\n');
 }
 
 static void write_byte_to_ringbuffer(const char c)
@@ -264,7 +266,11 @@ int log_set(int mask, int duration)
 int log_is_enable(int event_type)
 {
 
-    if (event_type < 0) return -1;
+    if (event_type != LOG_INTERRUPTS && event_type != LOG_SYSCALLS &&
+        event_type != LOG_PROCESSES && event_type != LOG_EXEC) 
+    {
+        panic("log_is_enable: invalid event type");
+    }
 
     acquire(&tickslock);
     uint t = ticks;
@@ -274,19 +280,15 @@ int log_is_enable(int event_type)
     
     acquire(&logconf.lock);
 
-    if (event_type & logconf.mask && event_type <= LOG_ALL) {
-
-        if (logconf.ticks_bound == 0 || t <= logconf.ticks_bound)
-        {
-            enable = 1;
-        }
-
-    }
-
     if (logconf.ticks_bound != 0 && t > logconf.ticks_bound)
     {
         logconf.mask = 0;
         logconf.ticks_bound = 0;
+    }
+
+    if ((event_type & logconf.mask) != 0)
+    {
+        enable = 1;
     }
 
     release(&logconf.lock);
