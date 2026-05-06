@@ -22,20 +22,6 @@ struct ringbuffer {
     int count;
 } dmesg_buffer;
 
-void init_ring_buffer() 
-{
-    dmesg_buffer.head = 0;
-    dmesg_buffer.tail = 0;
-    dmesg_buffer.count = 0;
-    initlock(&dmesg_buffer.lock, "ringbuffer lock");
-
-    logconf.mask = 0;
-    logconf.ticks_bound = 0;
-    initlock(&logconf.lock, "logconf");
-
-    write_byte_to_ringbuffer('\n');
-}
-
 static void write_byte_to_ringbuffer(const char c)
 {
     dmesg_buffer.buffer[dmesg_buffer.tail] = c;
@@ -49,6 +35,20 @@ static void write_byte_to_ringbuffer(const char c)
     {
         dmesg_buffer.head = (dmesg_buffer.head + 1) % RING_BUFFER_SIZE;
     }
+}
+
+void init_ring_buffer() 
+{
+    dmesg_buffer.head = 0;
+    dmesg_buffer.tail = 0;
+    dmesg_buffer.count = 0;
+    initlock(&dmesg_buffer.lock, "ringbuffer lock");
+
+    logconf.mask = 0;
+    logconf.ticks_bound = 0;
+    initlock(&logconf.lock, "logconf");
+
+    write_byte_to_ringbuffer('\n');
 }
 
 static void write_number_to_ringbuffer(uint64 num, uint base)
